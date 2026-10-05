@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sip & Swipe: Mumbai cafés matched to your mood</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&family=Young+Serif&display=swap">
+<style>
+:root{--bg:#f7f3f6;--ink:#241a2b;--soft:#6d6074;--card:#fff;--line:#e4dae6;--accent:#c94f74;--on:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1420;--ink:#f4eaf0;--soft:#b9a9c0;--card:#281f30;--line:#3b2f45;--accent:#ee7f9f;--on:#1b1420}}
+:root[data-theme="dark"]{--bg:#1b1420;--ink:#f4eaf0;--soft:#b9a9c0;--card:#281f30;--line:#3b2f45;--accent:#ee7f9f;--on:#1b1420}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 48px}
+h1,h2,h3{font-family:'Young Serif',Georgia,serif;font-weight:400;margin:0}
+header h1{font-size:clamp(34px,7vw,56px);line-height:1.05}
+header p{color:var(--soft);margin:8px 0 18px;max-width:46ch}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tabs button,.mode button,.again{font:inherit;cursor:pointer;border-radius:999px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);padding:9px 20px}
+.tabs button[aria-selected=true],.mode button.primary,.again{background:var(--ink);color:var(--bg)}
+button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:22px}
+#filters label{display:flex;flex-direction:column;font-size:13px;color:var(--soft);gap:4px}
+select{font:inherit;padding:9px 10px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.count{color:var(--soft);margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.cafe{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
+.ph{height:110px;display:grid;place-items:center;font-size:50px}
+.bd{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.bd h3{font-size:20px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:2px 10px;color:var(--soft)}
+.pick{border-color:var(--accent);color:var(--accent)}
+.dish{margin:2px 0;font-size:15px}
+.why{margin:0;font-size:13px;color:var(--accent)}
+.bd a{margin-top:auto;color:var(--ink);font-size:14px}
+.stage{max-width:380px;margin:0 auto;text-align:center}
+.stage h2{font-size:clamp(26px,5vw,34px);margin-bottom:8px}
+.mode{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.mode button{padding:14px 18px;font-size:17px}
+.prog,.hint{color:var(--soft);font-size:14px;margin:6px 0}
+.swipe{position:relative;height:340px;border-radius:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;color:#241a2b;touch-action:pan-y;user-select:none;cursor:grab;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.swipe .big{font-size:96px;line-height:1}
+.swipe h2{margin:0;color:#241a2b}
+.swipe p{margin:0;font-size:16px}
+.stamp{position:absolute;top:18px;padding:4px 12px;border:3px solid;border-radius:10px;font-weight:600;opacity:0;transform:rotate(-8deg)}
+.stamp.l{left:18px;color:#7a2434}.stamp.r{right:18px;color:#1f5a34;transform:rotate(8deg)}
+.btns{display:flex;justify-content:center;gap:28px;margin:18px 0 6px}
+.btns button{width:62px;height:62px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-size:24px;cursor:pointer}
+#yes{color:var(--accent)}
+.res{max-width:none;text-align:left}
+.res h2{margin-bottom:4px}
+footer{margin-top:36px;color:var(--soft);font-size:13px;max-width:70ch}
+.empty{color:var(--soft);padding:30px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Sip &amp; Swipe</h1>
+    <p>Mumbai cafés, matched to your mood. Swipe on foods and vibes, and get cafés with their famous dishes.</p>
+  </header>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="t-play" aria-selected="true">Swipe &amp; match</button>
+    <button role="tab" id="t-browse" aria-selected="false">Browse all cafés</button>
+  </div>
+  <div id="filters"></div>
+  <main id="main"></main>
+  <footer>
+    Cafés and dishes are compiled from public roundups (Holidify, Wanderlog, Vogue Singapore, Paperboard, With Love Ashni) plus our own picks. Cost is a rough tier for two people: ₹ under 800, ₹₹ 800 to 1,800, ₹₹₹ above 1,800. Menus, prices and hours change, so check before you go. Tap "Photos &amp; map" on any café for real photos.
+  </footer>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const TIER=['','₹','₹₹','₹₹₹'];
+const PAL=['#f4c9d4','#cfe3c3','#f6e0a8','#c9d6f2','#e3cdf0','#f7d3b8'];
+const FOODS={coffee:'Coffee',bakery:'Bakery & sweets',brunch:'Brunch',asian:'Asian',desi:'Desi',parsi:'Parsi & Irani',western:'Western'};
+const PICKS=['Mokai','Kyani & Co.','Prithvi Café','Pardon Our French'];
+// name, area, cost, type, food tags, vibe tags, famous dishes, emoji
+const RAW=[
+['Mokai','Bandra',2,'Brunch café','asian matcha brunch coffee','trendy cozy','Veggie dimsum in broth, Not So Turkish Eggs, okonomiyaki, matcha','🍵'],
+["Veronica's",'Bandra',2,'Brunch café','brunch coffee desi','cozy trendy','Everything Bandra Bagel','🥯'],
+['Boojee Café','Bandra',2,'Brunch café','brunch western sweet','aesthetic trendy','Salmon Eggs Benedict, hash browns, mocha bomboloni','🍳'],
+['Subko','Bandra',2,'Specialty coffee','coffee bakery sweet','work aesthetic','16-Hour Cold Brew, Tiramisu Iced Latte','☕'],
+['ESC. Coffee x Deli','Bandra',2,'Specialty coffee','coffee western','open-air trendy','Chorizo Toastie, Malta Cold Brew, Egg Florentine','🥪'],
+['House of Croissant','Bandra',2,'Bakery & patisserie','bakery sweet','trendy cozy','Croasts, croffles, filled croissants','🥐'],
+['Vanilla Miel','Bandra',2,'Bakery & patisserie','bakery sweet','cozy aesthetic','Pâtisserie pastries','🍰'],
+['Blondie','Bandra',3,'Brunch café','desi brunch coffee','aesthetic trendy date','Modern takes on classic Indian dishes','🍛'],
+['Salt Water Café','Bandra',3,'Brunch café','western brunch','date cozy','All-day omelettes, John Dory with sunflower seed risotto','🐟'],
+['The Nutcracker','Fort & Kala Ghoda',2,'Bakery & patisserie','bakery sweet coffee','cozy aesthetic heritage','Baked treats at the Kala Ghoda flagship','🧁'],
+['Kala Ghoda Café','Fort & Kala Ghoda',2,'Arts café','brunch coffee western','cozy work heritage','Shakshouka, grilled cheese sandwich, specialty coffee','🎨'],
+['Kyani & Co.','Fort & Kala Ghoda',1,'Heritage & Irani','parsi bakery','heritage','Bun maska, Irani chai, mawa cake','🫖'],
+['Pardon Our French','Fort & Kala Ghoda',2,'Bakery & patisserie','bakery sweet matcha brunch','aesthetic cozy work','Brown butter cake, salted Earl Grey matcha latte, eggs and soldiers','🥖'],
+['Café Mondegar','Colaba',2,'Heritage & Irani','western','heritage lively','Burgers, beer and the jukebox','🍺'],
+['Leopold Café','Colaba',2,'Heritage & Irani','western','heritage lively','Continental plates and Colaba buzz','🍻'],
+['Olympia Coffee House','Colaba',1,'Heritage & Irani','parsi','heritage','Irani chai, kheema pav, bun maska','🍳'],
+['Prithvi Café','Juhu',1,'Arts café','desi coffee','cozy open-air heritage','Stuffed parathas, pav bhaji, cutting chai','🫓'],
+['Lotus Café, JW Marriott','Juhu',3,'Hotel café','brunch desi asian','date lively','Sunday brunch with Mughlai and Asian spreads, high tea','🍽️'],
+['Lake View Café','Powai',2,'Brunch café','western brunch','open-air date work','Roast duck and roast lamb with a lake view','🦆']
+];
+const CAFES=RAW.map((r,i)=>({n:r[0],a:r[1],c:r[2],t:r[3],f:r[4].split(' '),v:r[5].split(' '),d:r[6],e:r[7],col:PAL[i%PAL.length]}));
+// emoji, title, subtitle, tags
+const CARDS=[
+['🍵','Matcha latte','Earthy, green, a little fancy',['matcha','asian']],
+['🥐','Fresh croissant','Flaky and still warm',['bakery']],
+['🫓','Paratha and cutting chai','Hearty desi comfort',['desi']],
+['🫖','Bun maska and Irani chai','Old Bombay breakfast',['parsi']],
+['🍳','Eggs your way','Benedict, shakshouka, toasties',['brunch']],
+['🍰','Something sweet','Cake, tiramisu, pastries',['sweet']],
+['☕','Cold brew','Strong, smooth, slow',['coffee']],
+['🍔','Burger and a beer','Casual western plates',['western']],
+['🥢','Asian-inspired bowls','Dimsum, chili rice, noodles',['asian']],
+['🍽️','Long Sunday brunch','A proper spread',['brunch']],
+['📚','A cozy corner with a book','Quiet, warm, unhurried',['cozy']],
+['📸','Photogenic interiors','Pretty light, pretty plates',['aesthetic','trendy']],
+['🏛️','Old-school heritage spot','Decades of stories',['heritage']],
+['💻','Laptop-friendly café','Wi-Fi, plugs, no rush',['work']],
+['🕯️','Date night, dim lights','Somewhere to linger',['date']],
+['🎶','Lively and buzzing','Music, chatter, crowds',['lively']],
+['🌿','Open-air breeze','Sit outside, watch the city',['open-air']],
+['🥪','A loaded sandwich','Toasties, bagels, deli plates',['western','coffee']],
+['🧁','A pastry counter','Too many good choices',['bakery','sweet']],
+['🍛','Modern Indian plates','Classics with a twist',['desi']],
+['🫧','Calm and quiet','Low music, soft light',['cozy','work']],
+['🌆','A seat with a view','Lake, sea or street',['open-air','date']],
+['🥞','Pancakes and waffles','Brunch with syrup',['brunch','sweet']],
+['🧋','A fancy iced drink','Fizzy, fruity, photogenic',['trendy','coffee']],
+['🍞','Old Irani classics','Kheema pav, mawa cake',['parsi','heritage']]
+];
+const F={cost:'',area:'',type:'',food:''};
+let view='play',mode='start',deck=[],idx=0,scores={},liked=[],K=10,need=5,likes=0,busy=false;
+const tagsOf=c=>c.f.concat(c.v);
+const pool=()=>CAFES.filter(c=>(!F.cost||String(c.c)===F.cost)&&(!F.area||c.a===F.area)&&(!F.type||c.t===F.type)&&(!F.food||c.f.includes(F.food)));
+const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+
+function buildFilters(){
+  const u=k=>[...new Set(CAFES.map(c=>c[k]))].sort();
+  const sel=(id,label,opts)=>`<label>${label}<select id="${id}"><option value="">Any</option>${opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select></label>`;
+  $('#filters').innerHTML=sel('cost','Cost for two',[[1,'₹ under 800'],[2,'₹₹ 800 to 1,800'],[3,'₹₹₹ above 1,800']])
+    +sel('area','Location',u('a').map(x=>[x,x]))+sel('type','Type of café',u('t').map(x=>[x,x]))+sel('food','Type of food',Object.entries(FOODS));
+  document.querySelectorAll('#filters select').forEach(s=>s.onchange=()=>{F[s.id]=s.value;mode='start';render()});
+}
+function cafeCard(c,note){
+  const q=encodeURIComponent(c.n+' Mumbai');
+  return `<article class="cafe"><div class="ph" style="background:${c.col}" aria-hidden="true">${c.e}</div><div class="bd"><h3>${c.n}</h3>
+  <div class="pills"><span class="pill">${c.a}</span><span class="pill">${TIER[c.c]}</span><span class="pill">${c.t}</span>${PICKS.includes(c.n)?'<span class="pill pick">Our pick</span>':''}</div>
+  <p class="dish"><b>Famous for:</b> ${c.d}</p>${note?`<p class="why">${note}</p>`:''}
+  <a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">Photos &amp; map</a></div></article>`;
+}
+function render(){
+  $('#t-play').setAttribute('aria-selected',view==='play');$('#t-browse').setAttribute('aria-selected',view==='browse');
+  const p=pool();
+  if(view==='browse'){
+    $('#main').innerHTML=`<p class="count">${p.length} of ${CAFES.length} cafés</p>`+(p.length?`<div class="grid">${p.map(c=>cafeCard(c)).join('')}</div>`:'<p class="empty">No cafés match these filters. Try loosening one.</p>');return;
+  }
+  if(mode==='start')startScreen(p);else if(mode==='swipe')showCard();else results();
+}
+function startScreen(p){
+  $('#main').innerHTML=`<div class="stage"><h2>What are you craving?</h2><p class="hint" style="font-size:16px">Swipe right on what sounds good and left on what doesn't. ${p.length} café${p.length===1?'':'s'} match your filters.</p>
+  ${p.length?`<div class="mode"><button class="primary" data-n="5">Quick: like 5 cards, get 10 picks</button><button data-n="10">Deep: like 10 cards, get your top 5</button></div>`:'<p class="empty">No cafés match these filters. Try loosening one.</p>'}</div>`;
+  document.querySelectorAll('.mode button').forEach(b=>b.onclick=()=>begin(+b.dataset.n));
+}
+function begin(n){
+  K=n===5?10:5;need=n;likes=0;deck=shuffle(CARDS);idx=0;liked=[];scores={};
+  pool().forEach(c=>scores[c.n]=0);mode='swipe';render();
+}
+function showCard(){
+  if(likes>=need||idx>=deck.length){mode='results';return results()}
+  const c=deck[idx];
+  $('#main').innerHTML=`<div class="stage"><p class="prog">${likes} of ${need} liked</p>
+  <div class="swipe" id="sw" style="background:${PAL[idx%PAL.length]}"><div class="stamp l">Nope</div><div class="stamp r">Yes please</div><div class="big">${c[0]}</div><h2>${c[1]}</h2><p>${c[2]}</p></div>
+  <div class="btns"><button id="no" aria-label="Skip this">✕</button><button id="yes" aria-label="Like this">♥</button></div>
+  <p class="hint">Swipe the card, tap a button, or use the arrow keys.</p></div>`;
+  const el=$('#sw');let sx=null,dx=0;
+  const stamps=()=>{el.querySelector('.l').style.opacity=dx<0?Math.min(1,-dx/90):0;el.querySelector('.r').style.opacity=dx>0?Math.min(1,dx/90):0};
+  el.onpointerdown=e=>{sx=e.clientX;el.setPointerCapture(e.pointerId);el.style.transition='none'};
+  el.onpointermove=e=>{if(sx===null)return;dx=e.clientX-sx;el.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`;stamps()};
+  const end=()=>{if(sx===null)return;sx=null;if(Math.abs(dx)>90)fling(dx>0?1:-1);else{el.style.transition='transform .2s';el.style.transform='';dx=0;stamps()}};
+  el.onpointerup=end;el.onpointercancel=end;
+  $('#no').onclick=()=>fling(-1);$('#yes').onclick=()=>fling(1);
+}
+function fling(d){
+  const el=$('#sw');if(!el||busy)return;busy=true;
+  el.style.transition='transform .25s,opacity .25s';el.style.transform=`translateX(${d*500}px) rotate(${d*20}deg)`;el.style.opacity=0;
+  setTimeout(()=>{busy=false;swipe(d)},240);
+}
+function swipe(d){
+  const tags=deck[idx][3];if(d>0){liked.push(...tags);likes++}
+  pool().forEach(c=>{const m=tags.filter(t=>tagsOf(c).includes(t)).length;scores[c.n]+=d>0?m:-0.6*m});
+  idx++;showCard();
+}
+function results(){
+  const ranked=pool().sort((a,b)=>scores[b.n]-scores[a.n]).slice(0,K);
+  const cards=ranked.map(c=>{const m=[...new Set(liked.filter(t=>tagsOf(c).includes(t)))];
+    return cafeCard(c,m.length?'Matches your taste: '+m.join(', '):'')}).join('');
+  $('#main').innerHTML=`<div class="stage res"><h2>Your ${ranked.length} best match${ranked.length===1?'':'es'}</h2><p class="count">${K===10?'From your quick round':'From your deep round'}, best match first.</p>
+  <div class="grid">${cards}</div><p style="text-align:center;margin-top:22px"><button class="again" id="again">Play again</button></p></div>`;
+  $('#again').onclick=()=>{mode='start';render()};
+}
+$('#t-play').onclick=()=>{view='play';render()};
+$('#t-browse').onclick=()=>{view='browse';render()};
+addEventListener('keydown',e=>{if(view==='play'&&mode==='swipe'){if(e.key==='ArrowLeft')fling(-1);if(e.key==='ArrowRight')fling(1)}});
+buildFilters();render();
+</script>
+</body>
+</html>
